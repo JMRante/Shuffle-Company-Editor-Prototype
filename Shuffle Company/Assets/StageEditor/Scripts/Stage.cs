@@ -19,7 +19,14 @@ public class Stage : MonoBehaviour
             {
                 for (int k = 0; k < STAGE_DEPTH; k++)
                 {
-                    stage[i, j, k] = 1;
+                    if (i % 2 == 0)
+                    {
+                        stage[i, 0, k] = 1;
+                    }
+                    else
+                    {
+                        stage[i, 0, k] = 0;
+                    }
                 }
             }
         }
@@ -260,39 +267,27 @@ public class Stage : MonoBehaviour
                             }
 
                             // Build block south side
-                            if (k + 1 >= STAGE_DEPTH || stage[i, j, k + 1] == 0)
+                            if (k - 1 <= -1 || stage[i, j, k - 1] == 0)
                             {
                                 // 1st Vertex
                                 vertex.x = i + 0.0f;
                                 vertex.y = j + 0.0f;
-                                vertex.z = k + 1.0f;
+                                vertex.z = k + 0.0f;
                                 vertices.Add(vertex);
 
                                 normal.x = 0.0f;
                                 normal.y = 0.0f;
-                                normal.z = 1.0f;
+                                normal.z = -1.0f;
                                 normals.Add(normal);
 
-                                uv.x = 1.0f;
+                                uv.x = 0.0f;
                                 uv.y = 1.0f;
                                 uvs.Add(uv);
 
                                 // 2nd Vertex
                                 vertex.x = i + 1.0f;
                                 vertex.y = j + 1.0f;
-                                vertex.z = k + 1.0f;
-                                vertices.Add(vertex);
-
-                                normals.Add(normal);
-
-                                uv.x = 0.0f;
-                                uv.y = 0.0f;
-                                uvs.Add(uv);
-
-                                // 3rd Vertex
-                                vertex.x = i + 0.0f;
-                                vertex.y = j + 1.0f;
-                                vertex.z = k + 1.0f;
+                                vertex.z = k + 0.0f;
                                 vertices.Add(vertex);
 
                                 normals.Add(normal);
@@ -301,16 +296,28 @@ public class Stage : MonoBehaviour
                                 uv.y = 0.0f;
                                 uvs.Add(uv);
 
-                                // 4th Vertex
+                                // 3rd Vertex
                                 vertex.x = i + 1.0f;
                                 vertex.y = j + 0.0f;
-                                vertex.z = k + 1.0f;
+                                vertex.z = k + 0.0f;
+                                vertices.Add(vertex);
+
+                                normals.Add(normal);
+
+                                uv.x = 1.0f;
+                                uv.y = 1.0f;
+                                uvs.Add(uv);
+
+                                // 4th Vertex
+                                vertex.x = i + 0.0f;
+                                vertex.y = j + 1.0f;
+                                vertex.z = k + 0.0f;
                                 vertices.Add(vertex);
 
                                 normals.Add(normal);
 
                                 uv.x = 0.0f;
-                                uv.y = 1.0f;
+                                uv.y = 0.0f;
                                 uvs.Add(uv);
 
                                 // 1st Triangle
