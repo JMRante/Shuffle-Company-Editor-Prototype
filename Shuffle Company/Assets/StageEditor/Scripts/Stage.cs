@@ -4,33 +4,21 @@ using UnityEngine;
 
 public class Stage : MonoBehaviour
 {
-    private const int STAGE_WIDTH = 10;
-    private const int STAGE_HEIGHT = 10;
-    private const int STAGE_DEPTH = 10;
+    private const int MAX_WIDTH = 200;
+    private const int MAX_HEIGHT = 10;
+    private const int MAX_DEPTH = 200;
 
-    private int[,,] stage = new int[STAGE_WIDTH, STAGE_HEIGHT, STAGE_DEPTH];
+    [HideInInspector]
+    public int width = 10;
+    [HideInInspector]
+    public int height = 10;
+    [HideInInspector]
+    public int depth = 10;
+
+    private int[,,] stage = new int[MAX_WIDTH, MAX_HEIGHT, MAX_DEPTH];
 
 	void Start ()
     {
-        // TEST STAGE VALUES
-        for (int i = 0; i < STAGE_WIDTH; i++)
-        {
-            for (int j = 0; j < STAGE_HEIGHT; j++)
-            {
-                for (int k = 0; k < STAGE_DEPTH; k++)
-                {
-                    if (i % 2 == 0)
-                    {
-                        stage[i, 0, k] = 1;
-                    }
-                    else
-                    {
-                        stage[i, 0, k] = 0;
-                    }
-                }
-            }
-        }
-
         // Check if stage object has a mesh filter and get it
         MeshFilter meshFilter = GetComponent<MeshFilter>();
 
@@ -53,17 +41,17 @@ public class Stage : MonoBehaviour
             int triangle = 0;
 
             // Loop through stage blocks
-            for (int i = 0; i < STAGE_WIDTH; i++)
+            for (int i = 0; i < MAX_WIDTH; i++)
             {
-                for (int j = 0; j < STAGE_HEIGHT; j++)
+                for (int j = 0; j < MAX_HEIGHT; j++)
                 {
-                    for (int k = 0; k < STAGE_DEPTH; k++)
+                    for (int k = 0; k < MAX_DEPTH; k++)
                     {
                         // If the grid space is not empty, build!
                         if (stage[i, j, k] != 0)
                         {
                             // Build block east side
-                            if (i + 1 >= STAGE_WIDTH || stage[i + 1, j, k] == 0)
+                            if (i + 1 >= MAX_WIDTH || stage[i + 1, j, k] == 0)
                             {
                                 // 1st Vertex
                                 vertex.x = i + 1.0f;
@@ -199,7 +187,7 @@ public class Stage : MonoBehaviour
                             }
 
                             // Build block top side
-                            if (j + 1 >= STAGE_HEIGHT || stage[i, j + 1, k] == 0)
+                            if (j + 1 >= MAX_HEIGHT || stage[i, j + 1, k] == 0)
                             {
                                 // 1st Vertex
                                 vertex.x = i + 0.0f;
