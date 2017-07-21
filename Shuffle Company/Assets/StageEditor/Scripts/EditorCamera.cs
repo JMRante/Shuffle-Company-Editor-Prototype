@@ -8,6 +8,7 @@ public class EditorCamera : MonoBehaviour
     public float keySpeed = 5.0f;
 
     public GameObject editorGrid;
+    public GameObject editorGridSelect;
 
     private int layer = 0;
 
@@ -49,9 +50,12 @@ public class EditorCamera : MonoBehaviour
         // Switch
         translate.y = layerSwitchDirection;
         layer += layerSwitchDirection;
+
+        // When changing position of the editor grid and friends, the direction is inverted since the quads face down
         editorGrid.transform.Translate(new Vector3(0f, 0f, -layerSwitchDirection));
+        editorGridSelect.transform.Translate(new Vector3(0f, 0f, -layerSwitchDirection));
 
         // Move camera
-        gameObject.transform.Translate(translate);
+        transform.Translate(translate);
 	}
 }
