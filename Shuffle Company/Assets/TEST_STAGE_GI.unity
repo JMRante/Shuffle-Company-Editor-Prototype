@@ -473,13 +473,54 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 000
+  m_Text: 0
 --- !u!222 &318922629
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 318922626}
+--- !u!1 &323126923
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 323126925}
+  - component: {fileID: 323126924}
+  m_Layer: 0
+  m_Name: EditorManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &323126924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 323126923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6caa3918bdb0370488bf599bcb6c5267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  operationMemorySize: 64
+--- !u!4 &323126925
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 323126923}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &605095936
 GameObject:
   m_ObjectHideFlags: 0
@@ -1081,7 +1122,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1225453450}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 1.5, y: 0.05, z: 0.5}
+  m_LocalPosition: {x: 0.5, y: 0.05, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1099,6 +1140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stage: {fileID: 1303156329}
+  editorOperationManager: {fileID: 323126924}
 --- !u!1 &1303156328
 GameObject:
   m_ObjectHideFlags: 0
@@ -1128,9 +1170,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9890cc7d6a5c5f6458a5f4fc778bbf94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 10
-  height: 10
-  depth: 10
 --- !u!4 &1303156330
 Transform:
   m_ObjectHideFlags: 0
@@ -1373,8 +1412,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eb95fd0815ab27498d17ed102f7b70a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSpeed: 0.5
-  keySpeed: 5
+  mouseSpeed: 0.7
+  keySpeed: 10
   editorGrid: {fileID: 2042763848}
   editorGridSelect: {fileID: 1225453450}
 --- !u!4 &1961195910
@@ -1502,6 +1541,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stage: {fileID: 1303156329}
   editorGridSelect: {fileID: 1225453455}
+  widthInput: {fileID: 42115441}
+  depthIinput: {fileID: 1063948578}
 --- !u!1 &2135956456
 GameObject:
   m_ObjectHideFlags: 0
@@ -1643,7 +1684,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 000
+  m_Text: 0
 --- !u!222 &2144088203
 CanvasRenderer:
   m_ObjectHideFlags: 0

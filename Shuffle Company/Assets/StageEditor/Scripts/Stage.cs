@@ -8,16 +8,57 @@ public class Stage : MonoBehaviour
     private const int MAX_HEIGHT = 10;
     private const int MAX_DEPTH = 200;
 
-    [HideInInspector]
-    public int width = 10;
-    [HideInInspector]
-    public int height = 10;
-    [HideInInspector]
-    public int depth = 10;
+    private const int MIN_WIDTH = 5;
+    private const int MIN_HEIGHT = 5;
+    private const int MIN_DEPTH = 5;
+
+    private int width = 10;
+    public int Width
+    {
+        get
+        {
+            return width;
+        }
+        set
+        {
+            width = Mathf.Clamp(value, MIN_WIDTH, MAX_WIDTH);
+        }
+    }
+
+    private int height = 10;
+    public int Height
+    {
+        get
+        {
+            return height;
+        }
+        set
+        {
+            height = Mathf.Clamp(value, MIN_HEIGHT, MAX_HEIGHT);
+        }
+    }
+
+    private int depth = 10;
+    public int Depth
+    {
+        get
+        {
+            return depth;
+        }
+        set
+        {
+            depth = Mathf.Clamp(value, MIN_DEPTH, MAX_DEPTH);
+        }
+    }
 
     private int[,,] stage = new int[MAX_WIDTH, MAX_HEIGHT, MAX_DEPTH];
 
 	void Start ()
+    {
+        BuildMesh();
+    }
+
+    public void BuildMesh()
     {
         // Check if stage object has a mesh filter and get it
         MeshFilter meshFilter = GetComponent<MeshFilter>();
@@ -334,6 +375,48 @@ public class Stage : MonoBehaviour
             mesh.triangles = triangles.ToArray();
 
             meshFilter.mesh = mesh;
+        }
+    }
+
+    public void SetBlock(int brush, int x, int y, int z)
+    {
+        stage[Mathf.FloorToInt(Mathf.Clamp(x, 0, Width)),
+              Mathf.FloorToInt(Mathf.Clamp(y, 0, Height)),
+              Mathf.FloorToInt(Mathf.Clamp(z, 0, Depth))] = brush;
+    }
+
+    public int GetBlock(int x, int y, int z)
+    {
+        return stage[Mathf.FloorToInt(Mathf.Clamp(x, 0, Width)),
+                     Mathf.FloorToInt(Mathf.Clamp(y, 0, Height)),
+                     Mathf.FloorToInt(Mathf.Clamp(z, 0, Depth))];
+    }
+
+    public void RemoveBlocksOutsideWidth()
+    {
+        for (int i = width; i < MAX_WIDTH; i++)
+        {
+            for (int j = 0; j < MAX_HEIGHT; j++)
+            {
+                for (int k = 0; k < depth; k++)
+                {
+                    stage[i, j, k] = 0;
+                }
+            }
+        }
+    }
+
+    public void RemoveBlocksOutsideDepth()
+    {
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < MAX_HEIGHT; j++)
+            {
+                for (int k = depth; k < MAX_DEPTH; k++)
+                {
+                    stage[i, j, k] = 0;
+                }
+            }
         }
     }
 }
