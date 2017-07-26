@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class EditorGridSelect : MonoBehaviour
 {
@@ -58,33 +59,37 @@ public class EditorGridSelect : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 30))
         {
-            meshRender.enabled = true;
-
-            // Since changes in the grid y axis are not caused by collision with the edior grid, calculate it regardless
-            GridY = Mathf.FloorToInt(transform.position.y);
-
-            // Make sure the cast is against the editor grid
-            if (hit.collider.gameObject.name == "EditorGrid")
+            // Check if mouse is over UI
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                GridX = Mathf.FloorToInt(hit.point.x);
-                GridZ = Mathf.FloorToInt(hit.point.z);
+                meshRender.enabled = true;
 
-                UpdateWorldPosition();
-            }
+                // Since changes in the grid y axis are not caused by collision with the edior grid, calculate it regardless
+                GridY = Mathf.FloorToInt(transform.position.y);
 
-            // If selecting cell in grid and mouse clicked, do proper operation
-            // Add block
-            if (Input.GetMouseButton(0) && stage.GetBlock(gridX, gridY, gridZ) != 1)
-            {
-                SetBlock setBlockOp = new SetBlock(1, gridX, gridY, gridZ, stage);
-                editorOperationManager.doOperation(setBlockOp);
-            }
+                // Make sure the cast is against the editor grid
+                if (hit.collider.gameObject.name == "EditorGrid")
+                {
+                    GridX = Mathf.FloorToInt(hit.point.x);
+                    GridZ = Mathf.FloorToInt(hit.point.z);
 
-            // Remove block
-            if (Input.GetMouseButton(1))
-            {
-                SetBlock setVoidBlockOp = new SetBlock(0, gridX, gridY, gridZ, stage);
-                editorOperationManager.doOperation(setVoidBlockOp);
+                    UpdateWorldPosition();
+                }
+
+                // If selecting cell in grid and mouse clicked, do proper operation
+                // Add block
+                if (Input.GetMouseButton(0) && stage.GetBlock(gridX, gridY, gridZ) != 1)
+                {
+                    SetBlock setBlockOp = new SetBlock(1, gridX, gridY, gridZ, stage);
+                    editorOperationManager.doOperation(setBlockOp);
+                }
+
+                // Remove block
+                if (Input.GetMouseButton(1))
+                {
+                    SetBlock setVoidBlockOp = new SetBlock(0, gridX, gridY, gridZ, stage);
+                    editorOperationManager.doOperation(setVoidBlockOp);
+                }
             }
         }
         else
