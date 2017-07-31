@@ -2,6 +2,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class Brush
+{
+    public int topTexIndex;
+    public int westTexIndex;
+    public int eastTexIndex;
+    public int southTexIndex;
+
+    public Brush()
+    {
+        topTexIndex = 0;
+        westTexIndex = 0;
+        eastTexIndex = 0;
+        southTexIndex = 0;
+    }
+
+    public Brush(int texIndex)
+    {
+        topTexIndex = texIndex;
+        westTexIndex = texIndex;
+        eastTexIndex = texIndex;
+        southTexIndex = texIndex;
+    }
+
+    public Brush(int topTexIndex, int bottomTexIndex)
+    {
+        this.topTexIndex = topTexIndex;
+        westTexIndex = bottomTexIndex;
+        eastTexIndex = bottomTexIndex;
+        southTexIndex = bottomTexIndex;
+    }
+
+    public Brush(int topTexIndex, int westTexIndex, int eastTexIndex, int southTexIndex)
+    {
+        this.topTexIndex = topTexIndex;
+        this.westTexIndex = westTexIndex;
+        this.eastTexIndex = eastTexIndex;
+        this.southTexIndex = southTexIndex;
+    }
+}
+
 public class Stage : MonoBehaviour
 {
     private const int MAX_WIDTH = 200;
@@ -51,10 +91,20 @@ public class Stage : MonoBehaviour
         }
     }
 
-    private int[,,] stage = new int[MAX_WIDTH, MAX_HEIGHT, MAX_DEPTH];
+    private int[] stage = new int[MAX_WIDTH * MAX_HEIGHT * MAX_DEPTH];
+    private int[] stageBuffer = new int[MAX_WIDTH * MAX_HEIGHT * MAX_DEPTH];
+
+    private List<Brush> brushList;
+    public List<Texture2D> textureList;
+    private Texture2DArray textureArray;
 
 	void Start ()
     {
+        brushList = new List<Brush>(512);
+        brushList.Add(new Brush(1, 0));
+
+        textureList = new List<Texture2D>();
+
         BuildMesh();
     }
 
@@ -72,13 +122,13 @@ public class Stage : MonoBehaviour
             // Prepare to build the stage mesh
             List<Vector3> vertices = new List<Vector3>();
             List<Vector3> normals = new List<Vector3>();
-            List<Vector2> uvs = new List<Vector2>();
+            List<Vector3> uvs = new List<Vector3>();
             List<int> triangles = new List<int>();
 
             // Build stage mesh
             Vector3 vertex;
             Vector3 normal;
-            Vector2 uv;
+            Vector3 uv;
             int triangle = 0;
 
             // Loop through stage blocks
@@ -89,52 +139,44 @@ public class Stage : MonoBehaviour
                     for (int k = 0; k < MAX_DEPTH; k++)
                     {
                         // If the grid space is not empty, build!
-                        if (stage[i, j, k] != 0)
+                        if (GetBlock(i, j, k) > 0)
                         {
-                            // Build block east side
-                            if (i + 1 >= MAX_WIDTH || stage[i + 1, j, k] == 0)
+                            Brush brush = brushList[GetBlock(i, j, k) - 1];
+
+                            // Build block top side
+                            if (j + 1 >= MAX_HEIGHT || GetBlock(i, j + 1, k) == 0)
                             {
                                 // 1st Vertex
-                                vertex.x = i + 1.0f;
-                                vertex.y = j + 0.0f;
-                                vertex.z = k + 0.0f;
+                                vertex.x = i + 0.0f;
+                                vertex.y = j + 1.0f;
+                                vertex.z = k + 1.0f;
                                 vertices.Add(vertex);
 
-                                normal.x = 1.0f;
-                                normal.y = 0.0f;
+                                normal.x = 0.0f;
+                                normal.y = 1.0f;
                                 normal.z = 0.0f;
                                 normals.Add(normal);
 
                                 uv.x = 1.0f;
                                 uv.y = 1.0f;
+                                uv.z = brush.topTexIndex;
                                 uvs.Add(uv);
 
                                 // 2nd Vertex
                                 vertex.x = i + 1.0f;
                                 vertex.y = j + 1.0f;
-                                vertex.z = k + 1.0f;
+                                vertex.z = k + 0.0f;
                                 vertices.Add(vertex);
 
                                 normals.Add(normal);
 
                                 uv.x = 0.0f;
                                 uv.y = 0.0f;
+                                uv.z = brush.topTexIndex;
                                 uvs.Add(uv);
 
                                 // 3rd Vertex
-                                vertex.x = i + 1.0f;
-                                vertex.y = j + 0.0f;
-                                vertex.z = k + 1.0f;
-                                vertices.Add(vertex);
-
-                                normals.Add(normal);
-
-                                uv.x = 0.0f;
-                                uv.y = 1.0f;
-                                uvs.Add(uv);
-
-                                // 4th Vertex
-                                vertex.x = i + 1.0f;
+                                vertex.x = i + 0.0f;
                                 vertex.y = j + 1.0f;
                                 vertex.z = k + 0.0f;
                                 vertices.Add(vertex);
@@ -143,6 +185,20 @@ public class Stage : MonoBehaviour
 
                                 uv.x = 1.0f;
                                 uv.y = 0.0f;
+                                uv.z = brush.topTexIndex;
+                                uvs.Add(uv);
+
+                                // 4th Vertex
+                                vertex.x = i + 1.0f;
+                                vertex.y = j + 1.0f;
+                                vertex.z = k + 1.0f;
+                                vertices.Add(vertex);
+
+                                normals.Add(normal);
+
+                                uv.x = 0.0f;
+                                uv.y = 1.0f;
+                                uv.z = brush.topTexIndex;
                                 uvs.Add(uv);
 
                                 // 1st Triangle
@@ -160,7 +216,7 @@ public class Stage : MonoBehaviour
                             }
 
                             // Build block west side
-                            if (i - 1 <= -1 || stage[i - 1, j, k] == 0)
+                            if (i - 1 <= -1 || GetBlock(i - 1, j, k) == 0)
                             {
                                 // 1st Vertex
                                 vertex.x = i + 0.0f;
@@ -175,6 +231,7 @@ public class Stage : MonoBehaviour
 
                                 uv.x = 1.0f;
                                 uv.y = 1.0f;
+                                uv.z = brush.westTexIndex;
                                 uvs.Add(uv);
 
                                 // 2nd Vertex
@@ -187,6 +244,7 @@ public class Stage : MonoBehaviour
 
                                 uv.x = 0.0f;
                                 uv.y = 0.0f;
+                                uv.z = brush.westTexIndex;
                                 uvs.Add(uv);
 
                                 // 3rd Vertex
@@ -199,6 +257,7 @@ public class Stage : MonoBehaviour
 
                                 uv.x = 0.0f;
                                 uv.y = 1.0f;
+                                uv.z = brush.westTexIndex;
                                 uvs.Add(uv);
 
                                 // 4th Vertex
@@ -211,6 +270,7 @@ public class Stage : MonoBehaviour
 
                                 uv.x = 1.0f;
                                 uv.y = 0.0f;
+                                uv.z = brush.westTexIndex;
                                 uvs.Add(uv);
 
                                 // 1st Triangle
@@ -227,49 +287,26 @@ public class Stage : MonoBehaviour
                                 triangle += 4;
                             }
 
-                            // Build block top side
-                            if (j + 1 >= MAX_HEIGHT || stage[i, j + 1, k] == 0)
+                            // Build block east side
+                            if (i + 1 >= MAX_WIDTH || GetBlock(i + 1, j, k) == 0)
                             {
                                 // 1st Vertex
-                                vertex.x = i + 0.0f;
-                                vertex.y = j + 1.0f;
-                                vertex.z = k + 1.0f;
+                                vertex.x = i + 1.0f;
+                                vertex.y = j + 0.0f;
+                                vertex.z = k + 0.0f;
                                 vertices.Add(vertex);
 
-                                normal.x = 0.0f;
-                                normal.y = 1.0f;
+                                normal.x = 1.0f;
+                                normal.y = 0.0f;
                                 normal.z = 0.0f;
                                 normals.Add(normal);
 
                                 uv.x = 1.0f;
                                 uv.y = 1.0f;
+                                uv.z = brush.eastTexIndex;
                                 uvs.Add(uv);
 
                                 // 2nd Vertex
-                                vertex.x = i + 1.0f;
-                                vertex.y = j + 1.0f;
-                                vertex.z = k + 0.0f;
-                                vertices.Add(vertex);
-
-                                normals.Add(normal);
-
-                                uv.x = 0.0f;
-                                uv.y = 0.0f;
-                                uvs.Add(uv);
-
-                                // 3rd Vertex
-                                vertex.x = i + 0.0f;
-                                vertex.y = j + 1.0f;
-                                vertex.z = k + 0.0f;
-                                vertices.Add(vertex);
-
-                                normals.Add(normal);
-
-                                uv.x = 1.0f;
-                                uv.y = 0.0f;
-                                uvs.Add(uv);
-
-                                // 4th Vertex
                                 vertex.x = i + 1.0f;
                                 vertex.y = j + 1.0f;
                                 vertex.z = k + 1.0f;
@@ -278,7 +315,34 @@ public class Stage : MonoBehaviour
                                 normals.Add(normal);
 
                                 uv.x = 0.0f;
+                                uv.y = 0.0f;
+                                uv.z = brush.eastTexIndex;
+                                uvs.Add(uv);
+
+                                // 3rd Vertex
+                                vertex.x = i + 1.0f;
+                                vertex.y = j + 0.0f;
+                                vertex.z = k + 1.0f;
+                                vertices.Add(vertex);
+
+                                normals.Add(normal);
+
+                                uv.x = 0.0f;
                                 uv.y = 1.0f;
+                                uv.z = brush.eastTexIndex;
+                                uvs.Add(uv);
+
+                                // 4th Vertex
+                                vertex.x = i + 1.0f;
+                                vertex.y = j + 1.0f;
+                                vertex.z = k + 0.0f;
+                                vertices.Add(vertex);
+
+                                normals.Add(normal);
+
+                                uv.x = 1.0f;
+                                uv.y = 0.0f;
+                                uv.z = brush.eastTexIndex;
                                 uvs.Add(uv);
 
                                 // 1st Triangle
@@ -296,7 +360,7 @@ public class Stage : MonoBehaviour
                             }
 
                             // Build block south side
-                            if (k - 1 <= -1 || stage[i, j, k - 1] == 0)
+                            if (k - 1 <= -1 || GetBlock(i, j, k - 1) == 0)
                             {
                                 // 1st Vertex
                                 vertex.x = i + 0.0f;
@@ -311,6 +375,7 @@ public class Stage : MonoBehaviour
 
                                 uv.x = 0.0f;
                                 uv.y = 1.0f;
+                                uv.z = brush.southTexIndex;
                                 uvs.Add(uv);
 
                                 // 2nd Vertex
@@ -371,7 +436,7 @@ public class Stage : MonoBehaviour
             Mesh mesh = new Mesh();
             mesh.vertices = vertices.ToArray();
             mesh.normals = normals.ToArray();
-            mesh.uv = uvs.ToArray();
+            mesh.SetUVs(0, uvs);
             mesh.triangles = triangles.ToArray();
 
             meshFilter.mesh = mesh;
@@ -380,16 +445,22 @@ public class Stage : MonoBehaviour
 
     public void SetBlock(int brush, int x, int y, int z)
     {
-        stage[Mathf.FloorToInt(Mathf.Clamp(x, 0, Width)),
-              Mathf.FloorToInt(Mathf.Clamp(y, 0, Height)),
-              Mathf.FloorToInt(Mathf.Clamp(z, 0, Depth))] = brush;
+        stage[x + (y * MAX_WIDTH) + (z * MAX_WIDTH * MAX_HEIGHT)] = brush;
     }
 
     public int GetBlock(int x, int y, int z)
     {
-        return stage[Mathf.FloorToInt(Mathf.Clamp(x, 0, Width)),
-                     Mathf.FloorToInt(Mathf.Clamp(y, 0, Height)),
-                     Mathf.FloorToInt(Mathf.Clamp(z, 0, Depth))];
+        return stage[x + (y * MAX_WIDTH) + (z * MAX_WIDTH * MAX_HEIGHT)];
+    }
+
+    public void SetBufferBlock(int brush, int x, int y, int z)
+    {
+        stageBuffer[x + (y * MAX_WIDTH) + (z * MAX_WIDTH * MAX_HEIGHT)] = brush;
+    }
+
+    public int GetBufferBlock(int x, int y, int z)
+    {
+        return stageBuffer[x + (y * MAX_WIDTH) + (z * MAX_WIDTH * MAX_HEIGHT)];
     }
 
     public void RemoveBlocksOutsideWidth()
@@ -400,7 +471,7 @@ public class Stage : MonoBehaviour
             {
                 for (int k = 0; k < depth; k++)
                 {
-                    stage[i, j, k] = 0;
+                    SetBlock(0, i, j, k);
                 }
             }
         }
@@ -414,9 +485,38 @@ public class Stage : MonoBehaviour
             {
                 for (int k = depth; k < MAX_DEPTH; k++)
                 {
-                    stage[i, j, k] = 0;
+                    SetBlock(0, i, j, k);
                 }
             }
         }
+    }
+
+    public void ShiftBlocks(int shiftX, int shiftY, int shiftZ)
+    {
+        for (int i = 0; i < width; i++)
+        {
+            for (int j =  0; j < height; j++)
+            {
+                for (int k = 0; k < depth; k++)
+                {
+                    int oldPositionX = i - shiftX;
+                    int oldPositionY = j - shiftY;
+                    int oldPositionZ = k - shiftZ;
+
+                    if (oldPositionX >= 0 && oldPositionX < width
+                        && oldPositionY >= 0 && oldPositionY < height
+                        && oldPositionZ >= 0 && oldPositionZ < depth)
+                    {
+                        SetBufferBlock(GetBlock(oldPositionX, oldPositionY, oldPositionZ), i, j, k);
+                    }
+                    else
+                    {
+                        SetBufferBlock(0, i, j, k);
+                    }
+                }
+            }
+        }
+
+        stageBuffer.CopyTo(stage, 0);
     }
 }
